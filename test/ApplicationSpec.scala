@@ -1,4 +1,5 @@
 import org.scalatestplus.play._
+import play.api.libs.json.Json
 import play.api.test._
 import play.api.test.Helpers._
 
@@ -29,12 +30,49 @@ class ApplicationSpec extends PlaySpec with OneAppPerTest {
 
   }
 
-  "CountController" should {
+  "TodoController" should {
 
-    "return an increasing count" in {
-      contentAsString(route(app, FakeRequest(GET, "/count")).get) mustBe "0"
-      contentAsString(route(app, FakeRequest(GET, "/count")).get) mustBe "1"
-      contentAsString(route(app, FakeRequest(GET, "/count")).get) mustBe "2"
+    "render the posttest page is multi" in {
+      val todo = route(app, FakeRequest(
+        POST,
+        "/posttest",
+        FakeHeaders(Seq("Content-Type" -> "application/json")),
+        Json.obj(
+          "key1" -> "value1",
+          "key2" -> "value2"
+        )
+      )).get
+
+      status(todo) mustBe OK
+      contentType(todo) mustBe Some("application/json")
+      val node = Json.parse(contentAsString(todo))
+      (node \ "key1").as[String] mustBe "value1"
+      (node \ "key2").as[String] mustBe "value2"
+    }
+
+    "render the posttest page is single" in {
+      val todo = route(app, FakeRequest(
+        POST,
+        "/posttest",
+        FakeHeaders(Seq("Content-Type" -> "application/json")),
+        Json.obj("key" -> "value")
+      )).get
+
+      status(todo) mustBe OK
+      contentType(todo) mustBe Some("application/json")
+      val node = Json.parse(contentAsString(todo))
+      (node \ "key").as[String] mustBe "value"
+    }
+
+    "render the posttest page is empty" in {
+      val todo = route(app, FakeRequest(
+        POST,
+        "/posttest"
+      )).get
+
+      status(todo) mustBe OK
+      contentType(todo) mustBe Some("application/json")
+      contentAsString(todo) isEmpty
     }
 
   }

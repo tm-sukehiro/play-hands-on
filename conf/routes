@@ -1,8 +1,9 @@
-#
+# index
+GET     /                           controllers.TodoController.index()
+
 GET     /todo/helloworld            controllers.TodoController.helloworld()
 GET     /todo/list                  controllers.TodoController.list()
 GET     /todo/new                   controllers.TodoController.create()
-
 POST    /todo                       controllers.TodoController.save()
 
 POST    /posttest                   controllers.TodoController.postTest()

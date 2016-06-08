@@ -15,6 +15,10 @@ import entities._
 
 class TodoController @Inject() (todoService: TodoService, val messagesApi: MessagesApi) extends Controller with I18nSupport {
 
+  def index() = Action { implicit request =>
+    Ok("Your new application is ready.").as("text/html")
+  }
+
   def helloworld() = Action { implicit request =>
     Ok("Hello World")
   }
