@@ -1,6 +1,6 @@
 @import com.mohiva.play.silhouette.api.LoginInfo
 
-@(loggedUser: Option[User], loginInfo:Option[LoginInfo])(implicit messages:Messages)
+@(loggedUser: Option[User], loginInfo:Option[LoginInfo])(implicit messages:Messages, webJarAssets:WebJarAssets)
 
 @views.html.templates.mainApp(Messages("app.title"), tab = "index", loggedUser = loggedUser, loginInfo=loginInfo) {
   <h2 class="text-primary">@Messages("index.header")</h2>

@@ -79,7 +79,8 @@ class Auth @Inject() (
                        avatarService: AvatarService,
                        passwordHasher: PasswordHasher,
                        configuration: Configuration,
-                       mailer: Mailer) extends Silhouette[User,CookieAuthenticator] {
+                       mailer: Mailer,
+                       implicit val webJarAssets: WebJarAssets) extends Silhouette[User,CookieAuthenticator] {
 
   import AuthForms._
 

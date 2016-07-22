@@ -1,6 +1,6 @@
 @import com.mohiva.play.silhouette.api.LoginInfo
 
-@(title: String, tab: String = "", loggedUser: Option[User], loginInfo:Option[LoginInfo] = None)(content: Html)(implicit messages:Messages)
+@(title: String, tab: String = "", loggedUser: Option[User], loginInfo:Option[LoginInfo] = None)(content: Html)(implicit messages:Messages, webJarAssets:WebJarAssets)
 
 @navbarContent = {
   <ul class="nav navbar-nav">

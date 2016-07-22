@@ -3,24 +3,23 @@ package utils
 import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api.SecuredErrorHandler
-
 import play.api.http.DefaultHttpErrorHandler
-import play.api.i18n.{I18nSupport,Messages,MessagesApi}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.Results._
-import play.api.mvc.{Result,RequestHeader}
+import play.api.mvc.{RequestHeader, Result}
 import play.api.routing.Router
-import play.api.{OptionalSourceMapper,Configuration}
+import play.api.{Configuration, OptionalSourceMapper}
 
 import scala.concurrent.Future
-
-import controllers.routes
+import controllers.{WebJarAssets, routes}
 
 class ErrorHandler @Inject() (
                                val messagesApi: MessagesApi,
                                env: play.api.Environment,
                                config: Configuration,
                                sourceMapper: OptionalSourceMapper,
-                               router: javax.inject.Provider[Router])
+                               router: javax.inject.Provider[Router],
+                               implicit val webJarAssets: WebJarAssets)
   extends DefaultHttpErrorHandler(env, config, sourceMapper, router)
     with SecuredErrorHandler with I18nSupport {
 

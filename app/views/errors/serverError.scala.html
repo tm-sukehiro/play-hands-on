@@ -1,4 +1,4 @@
-@(request:RequestHeader, exception:Throwable)(implicit messages:Messages)
+@(request:RequestHeader, exception:Throwable)(implicit messages:Messages, webJarAssets:WebJarAssets)
 
 @views.html.templates.main(Messages("error.serverError")) {
   <h4>@Messages("error.serverError")</h4>

@@ -17,7 +17,8 @@ import models.User
 class Application @Inject() (
                               val messagesApi: MessagesApi,
                               val env:Environment[User,CookieAuthenticator],
-                              socialProviderRegistry: SocialProviderRegistry) extends Silhouette[User,CookieAuthenticator] {
+                              socialProviderRegistry: SocialProviderRegistry,
+                              implicit val webJarAssets: WebJarAssets) extends Silhouette[User,CookieAuthenticator] {
 
   def index = UserAwareAction.async { implicit request =>
     Future.successful(Ok(views.html.index(request.identity, request.authenticator.map(_.loginInfo))))

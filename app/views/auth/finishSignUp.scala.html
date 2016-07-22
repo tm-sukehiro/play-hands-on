@@ -1,4 +1,4 @@
-@(profile:Profile)(implicit messages:Messages)
+@(profile:Profile)(implicit messages:Messages, webJarAssets: WebJarAssets)
 
 @templates.mainAuth(Messages("finishSignUp.title"), tab="signup") {
   <p>@Messages("finishSignUp.thanks", profile.fullName.get)</p>

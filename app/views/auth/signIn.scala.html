@@ -1,6 +1,6 @@
 @import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
 
-@(signInForm: Form[AuthForms.SignInData], socialProviderRegistry:SocialProviderRegistry)(implicit request: RequestHeader, messages:Messages)
+@(signInForm: Form[AuthForms.SignInData], socialProviderRegistry:SocialProviderRegistry)(implicit request: RequestHeader, messages:Messages, webJarAssets: WebJarAssets)
 
 @implicitFieldConstructor = @{b3.horizontal.fieldConstructor("col-md-3","col-md-6")}
 
