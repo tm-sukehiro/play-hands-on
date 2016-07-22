@@ -14,8 +14,15 @@ libraryDependencies ++= Seq(
   ws,
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
   "com.mohiva" %% "play-silhouette" % "3.0.0",
-  "org.reactivemongo" %% "play2-reactivemongo" % "0.11.7.play24",
-  specs2 % Test
+  "org.reactivemongo" %% "play2-reactivemongo" % "0.11.14",
+  specs2 % Test,
+  "net.ceedubs" %% "ficus" % "1.1.2",
+  "net.codingwell" %% "scala-guice" % "4.0.0",
+  "com.typesafe.play" %% "play-mailer" % "5.0.0",
+  "org.webjars" %% "webjars-play" % "2.4.0",
+  "com.adrianhurt" %% "play-bootstrap3" % "0.4.4-P24",
+  "com.mohiva" %% "play-silhouette-testkit" % "3.0.0" % "test",
+  filters
 )
 
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
