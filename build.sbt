@@ -25,4 +25,7 @@ libraryDependencies ++= Seq(
   filters
 )
 
+resolvers += Resolver.jcenterRepo
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
+resolvers += "Atlassian Releases" at "https://maven.atlassian.com/public/"
+
