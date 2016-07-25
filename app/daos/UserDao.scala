@@ -1,17 +1,19 @@
 package daos
 
 import java.util.UUID
+import javax.inject.Inject
 
-import scala.concurrent.Future
-import play.api.Play.current
+import scala.concurrent.{Await, Future}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json._
 import play.modules.reactivemongo.ReactiveMongoApi
 import play.modules.reactivemongo.json._
-import play.modules.reactivemongo.json.collection.JSONCollection
+import reactivemongo.play.json.collection.JSONCollection
 import com.mohiva.play.silhouette.api.LoginInfo
 import models.{Profile, User}
 import models.User._
+
+import scala.concurrent.duration.Duration
 
 trait UserDao {
   def find(loginInfo:LoginInfo):Future[Option[User]]
@@ -22,9 +24,10 @@ trait UserDao {
   def update(profile:Profile):Future[User]
 }
 
-class MongoUserDao extends UserDao {
-  lazy val reactiveMongoApi = current.injector.instanceOf[ReactiveMongoApi]
-  val users = reactiveMongoApi.db.collection[JSONCollection]("users")
+class MongoUserDao @Inject() (
+                               val reactiveMongoApi: ReactiveMongoApi
+                             ) extends UserDao {
+  val users = Await.result(reactiveMongoApi.database.map(_.collection[JSONCollection]("users")), Duration.Inf)
 
   def find(loginInfo:LoginInfo):Future[Option[User]] =
     users.find(Json.obj(
