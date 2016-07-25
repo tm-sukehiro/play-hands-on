@@ -13,7 +13,7 @@ libraryDependencies ++= Seq(
   cache,
   ws,
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
-  "com.mohiva" %% "play-silhouette" % "3.0.0",
+  "com.mohiva" %% "play-silhouette" % "4.0.0",
   "org.reactivemongo" %% "play2-reactivemongo" % "0.11.14",
   specs2 % Test,
   "net.ceedubs" %% "ficus" % "1.1.2",
@@ -22,7 +22,9 @@ libraryDependencies ++= Seq(
   "org.webjars" %% "webjars-play" % "2.5.0",
   "com.adrianhurt" %% "play-bootstrap" % "1.0-P25-B3",
   "com.mohiva" %% "play-silhouette-testkit" % "3.0.0" % "test",
-  filters
+  filters,
+  "com.mohiva" %% "play-silhouette-password-bcrypt" % "4.0.0",
+  "com.mohiva" %% "play-silhouette-persistence" % "4.0.0"
 )
 
 resolvers += Resolver.jcenterRepo

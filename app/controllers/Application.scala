@@ -3,22 +3,26 @@ package controllers
 import javax.inject.Inject
 
 import scala.concurrent.Future
-
-import com.mohiva.play.silhouette.api.{Environment,Silhouette}
+import com.mohiva.play.silhouette.api.{Env, Environment, Silhouette}
 import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
 import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
-
 import play.api._
 import play.api.mvc._
-import play.api.i18n.{I18nSupport,MessagesApi}
-
+import play.api.i18n.{I18nSupport, MessagesApi}
 import models.User
+
+trait CookieEnv extends Env {
+  type I = User
+  type A = CookieAuthenticator
+}
 
 class Application @Inject() (
                               val messagesApi: MessagesApi,
-                              val env:Environment[User,CookieAuthenticator],
+                              silhouette: Silhouette[CookieEnv],
                               socialProviderRegistry: SocialProviderRegistry,
-                              implicit val webJarAssets: WebJarAssets) extends Silhouette[User,CookieAuthenticator] {
+                              implicit val webJarAssets: WebJarAssets) extends Controller {
+
+  import silhouette._
 
   def index = UserAwareAction.async { implicit request =>
     Future.successful(Ok(views.html.index(request.identity, request.authenticator.map(_.loginInfo))))

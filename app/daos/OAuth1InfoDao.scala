@@ -5,7 +5,7 @@ import javax.inject.Inject
 import scala.concurrent.{Await, Future}
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.impl.providers.OAuth1Info
-import com.mohiva.play.silhouette.impl.daos.DelegableAuthInfoDAO
+import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json._
 import play.modules.reactivemongo.ReactiveMongoApi

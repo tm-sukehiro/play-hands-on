@@ -5,15 +5,13 @@ import javax.inject.Inject
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
-
 import net.ceedubs.ficus.Ficus._
-
 import com.mohiva.play.silhouette.api.Authenticator.Implicits._
-import com.mohiva.play.silhouette.api.{Environment,LoginInfo,Silhouette}
+import com.mohiva.play.silhouette.api.{Env, LoginInfo, Silhouette, Logger}
 import com.mohiva.play.silhouette.api.exceptions.ProviderException
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.services.AvatarService
-import com.mohiva.play.silhouette.api.util.{Credentials,PasswordHasher}
+import com.mohiva.play.silhouette.api.util.{Credentials, PasswordHasher}
 import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
 import com.mohiva.play.silhouette.impl.exceptions.IdentityNotFoundException
 import com.mohiva.play.silhouette.impl.providers._
@@ -23,13 +21,11 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.Constraints._
 import play.api.mvc._
-import play.api.i18n.{I18nSupport,MessagesApi,Messages}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.concurrent.Execution.Implicits._
-
-import models.{Profile,User,UserToken}
-import services.{UserService,UserTokenService}
+import models.{Profile, User, UserToken}
+import services.{UserService, UserTokenService}
 import utils.Mailer
-
 import org.joda.time.DateTime
 
 object AuthForms {
@@ -68,9 +64,14 @@ object AuthForms {
   ).verifying(Messages("error.passwordsDontMatch"), password => password._1 == password._2))
 }
 
+trait CookieEnv extends Env {
+  type I = User
+  type A = CookieAuthenticator
+}
+
 class Auth @Inject() (
                        val messagesApi: MessagesApi,
-                       val env:Environment[User,CookieAuthenticator],
+                       silhouette: Silhouette[CookieEnv],
                        socialProviderRegistry: SocialProviderRegistry,
                        authInfoRepository: AuthInfoRepository,
                        credentialsProvider: CredentialsProvider,
@@ -80,9 +81,10 @@ class Auth @Inject() (
                        passwordHasher: PasswordHasher,
                        configuration: Configuration,
                        mailer: Mailer,
-                       implicit val webJarAssets: WebJarAssets) extends Silhouette[User,CookieAuthenticator] {
+                       implicit val webJarAssets: WebJarAssets) extends Controller with Logger {
 
   import AuthForms._
+  import silhouette._
 
   def startSignUp = UserAwareAction.async { implicit request =>
     Future.successful(request.identity match {
