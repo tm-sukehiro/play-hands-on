@@ -1,6 +1,6 @@
 package utils
 
-import javax.inject.Inject
+import javax.inject.{Inject, Provider}
 
 import com.mohiva.play.silhouette.api.SecuredErrorHandler
 import play.api.http.DefaultHttpErrorHandler
@@ -19,9 +19,12 @@ class ErrorHandler @Inject() (
                                config: Configuration,
                                sourceMapper: OptionalSourceMapper,
                                router: javax.inject.Provider[Router],
-                               implicit val webJarAssets: WebJarAssets)
+                               p: Provider[WebJarAssets])
   extends DefaultHttpErrorHandler(env, config, sourceMapper, router)
     with SecuredErrorHandler with I18nSupport {
+
+  // https://www.playframework.com/documentation/2.5.x/Migration25#Handling-legacy-components
+  implicit lazy val webJarAssets = p.get()
 
   override def onNotAuthenticated(request: RequestHeader, messages: Messages): Option[Future[Result]] =
     Some(Future.successful(Redirect(routes.Auth.signIn())))
