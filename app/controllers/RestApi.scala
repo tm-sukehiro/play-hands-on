@@ -30,7 +30,12 @@ class RestApi @Inject() (
     )
   }
 
-  override def onNotAuthenticated(request:RequestHeader) = {
-    Some(Future.successful(Unauthorized(Json.obj("error" -> Messages("error.profileUnauth")))))
+  val errorHandler = new SecuredErrorHandler {
+    override def onNotAuthenticated(implicit request: RequestHeader) = {
+      Future.successful(Unauthorized(Json.obj("error" -> Messages("error.profileUnauth"))))
+    }
+    override def onNotAuthorized(implicit request: RequestHeader) = {
+      Future.successful(Forbidden("local.not.authorized"))
+    }
   }
 }
