@@ -76,7 +76,7 @@ class Auth @Inject() (
                        passwordHasher: PasswordHasher,
                        configuration: Configuration,
                        mailer: Mailer,
-                       implicit val webJarAssets: WebJarAssets) extends Controller with Logger {
+                       implicit val webJarAssets: WebJarAssets) extends Controller with I18nSupport with Logger {
 
   import AuthForms._
   import silhouette._

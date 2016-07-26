@@ -14,7 +14,7 @@ import utils.auth.CookieEnv
 
 class RestApi @Inject() (
                           val messagesApi: MessagesApi,
-                          val silhouette: Silhouette[CookieEnv]) extends Controller {
+                          val silhouette: Silhouette[CookieEnv]) extends Controller with I18nSupport {
 
   import silhouette._
 

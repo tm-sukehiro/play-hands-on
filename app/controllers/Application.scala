@@ -13,7 +13,7 @@ class Application @Inject() (
                               val messagesApi: MessagesApi,
                               silhouette: Silhouette[CookieEnv],
                               socialProviderRegistry: SocialProviderRegistry,
-                              implicit val webJarAssets: WebJarAssets) extends Controller {
+                              implicit val webJarAssets: WebJarAssets) extends Controller with I18nSupport {
 
   import silhouette._
 
