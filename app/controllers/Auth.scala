@@ -7,7 +7,7 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 import net.ceedubs.ficus.Ficus._
 import com.mohiva.play.silhouette.api.Authenticator.Implicits._
-import com.mohiva.play.silhouette.api.{Env, LoginInfo, Silhouette, Logger}
+import com.mohiva.play.silhouette.api.{Env, Logger, LoginInfo, Silhouette}
 import com.mohiva.play.silhouette.api.exceptions.ProviderException
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.services.AvatarService
@@ -15,7 +15,6 @@ import com.mohiva.play.silhouette.api.util.{Credentials, PasswordHasher}
 import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
 import com.mohiva.play.silhouette.impl.exceptions.IdentityNotFoundException
 import com.mohiva.play.silhouette.impl.providers._
-
 import play.api._
 import play.api.data.Form
 import play.api.data.Forms._
@@ -27,6 +26,7 @@ import models.{Profile, User, UserToken}
 import services.{UserService, UserTokenService}
 import utils.Mailer
 import org.joda.time.DateTime
+import utils.auth.CookieEnv
 
 object AuthForms {
 
@@ -62,11 +62,6 @@ object AuthForms {
     "password1" -> nonEmptyText.verifying(minLength(6)),
     "password2" -> nonEmptyText
   ).verifying(Messages("error.passwordsDontMatch"), password => password._1 == password._2))
-}
-
-trait CookieEnv extends Env {
-  type I = User
-  type A = CookieAuthenticator
 }
 
 class Auth @Inject() (

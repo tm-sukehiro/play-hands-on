@@ -3,18 +3,11 @@ package controllers
 import javax.inject.Inject
 
 import scala.concurrent.Future
-import com.mohiva.play.silhouette.api.{Env, Environment, Silhouette}
-import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
+import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
-import play.api._
 import play.api.mvc._
 import play.api.i18n.{I18nSupport, MessagesApi}
-import models.User
-
-trait CookieEnv extends Env {
-  type I = User
-  type A = CookieAuthenticator
-}
+import utils.auth.CookieEnv
 
 class Application @Inject() (
                               val messagesApi: MessagesApi,
