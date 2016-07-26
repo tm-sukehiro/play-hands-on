@@ -2,7 +2,7 @@ package utils
 
 import javax.inject.{Inject, Provider}
 
-import com.mohiva.play.silhouette.api.SecuredErrorHandler
+import com.mohiva.play.silhouette.api.actions.SecuredErrorHandler
 import play.api.http.DefaultHttpErrorHandler
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.Results._
@@ -26,11 +26,11 @@ class ErrorHandler @Inject() (
   // https://www.playframework.com/documentation/2.5.x/Migration25#Handling-legacy-components
   implicit lazy val webJarAssets = p.get()
 
-  override def onNotAuthenticated(request: RequestHeader, messages: Messages): Option[Future[Result]] =
-    Some(Future.successful(Redirect(routes.Auth.signIn())))
+  override def onNotAuthenticated(implicit request: RequestHeader): Future[Result] =
+    Future.successful(Redirect(routes.Auth.signIn()))
 
-  override def onNotAuthorized(request: RequestHeader, messages: Messages): Option[Future[Result]] =
-    Some(Future.successful(Redirect(routes.Auth.signIn()).flashing("error" -> Messages("error.accessDenied")(messages))))
+  override def onNotAuthorized(implicit request: RequestHeader): Future[Result] =
+    Future.successful(Redirect(routes.Auth.signIn()).flashing("error" -> Messages("error.accessDenied")))
 
   override def onNotFound(request: RequestHeader, message: String): Future[Result] =
     Future.successful(Ok(views.html.errors.notFound(request)))
