@@ -1,39 +1,39 @@
 package module
 
+import com.google.inject.name.Named
 import com.google.inject.{AbstractModule, Provides}
-
+import com.mohiva.play.silhouette.api.crypto.{CookieSigner, Crypter, CrypterAuthenticatorEncoder}
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.services._
 import com.mohiva.play.silhouette.api.util._
-import com.mohiva.play.silhouette.api.{Environment, EventBus}
+import com.mohiva.play.silhouette.api.{Environment, EventBus, Silhouette, SilhouetteProvider}
 import com.mohiva.play.silhouette.impl.authenticators._
-import com.mohiva.play.silhouette.impl.daos.DelegableAuthInfoDAO
 import com.mohiva.play.silhouette.impl.providers._
 import com.mohiva.play.silhouette.impl.providers.oauth1.TwitterProvider
-
 import com.mohiva.play.silhouette.impl.providers.oauth1.secrets.{CookieSecretProvider, CookieSecretSettings}
 import com.mohiva.play.silhouette.impl.providers.oauth1.services.PlayOAuth1Service
-import com.mohiva.play.silhouette.impl.repositories.DelegableAuthInfoRepository
 import com.mohiva.play.silhouette.impl.util._
 import com.mohiva.play.silhouette.impl.services.GravatarService
-
+import com.mohiva.play.silhouette.password.BCryptPasswordHasher
+import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
+import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
 import net.ceedubs.ficus.Ficus._
 import net.ceedubs.ficus.readers.ArbitraryTypeReader._
 import net.codingwell.scalaguice.ScalaModule
-
 import play.api.Configuration
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.mailer.MailerClient
 import play.api.libs.ws.WSClient
-
 import daos._
 import models.User
-import services.{UserService,UserTokenService}
+import services.{UserService, UserTokenService}
 import utils.Mailer
+import utils.auth.CookieEnv
 
 class Module extends AbstractModule with ScalaModule {
 
   def configure() {
+    bind[Silhouette[CookieEnv]].to[SilhouetteProvider[CookieEnv]]
     bind[IdentityService[User]].to[UserService]
     bind[UserDao].to[MongoUserDao]
     bind[UserTokenDao].to[MongoUserTokenDao]
@@ -57,9 +57,9 @@ class Module extends AbstractModule with ScalaModule {
   def provideEnvironment(
                           identityService: IdentityService[User],
                           authenticatorService: AuthenticatorService[CookieAuthenticator],
-                          eventBus: EventBus): Environment[User, CookieAuthenticator] = {
+                          eventBus: EventBus): Environment[CookieEnv] = {
 
-    Environment[User, CookieAuthenticator](
+    Environment[CookieEnv](
       identityService,
       authenticatorService,
       Seq(),
@@ -69,13 +69,17 @@ class Module extends AbstractModule with ScalaModule {
 
   @Provides
   def provideAuthenticatorService(
+                                   @Named("authenticator-cookie-signer") cookieSigner: CookieSigner,
+                                   @Named("authenticator-crypter") crypter: Crypter,
                                    fingerprintGenerator: FingerprintGenerator,
                                    idGenerator: IDGenerator,
                                    configuration: Configuration,
                                    clock: Clock): AuthenticatorService[CookieAuthenticator] = {
 
     val config = configuration.underlying.as[CookieAuthenticatorSettings]("silhouette.authenticator")
-    new CookieAuthenticatorService(config, None, fingerprintGenerator, idGenerator, clock)
+    val encoder = new CrypterAuthenticatorEncoder(crypter)
+
+    new CookieAuthenticatorService(config, None, cookieSigner, encoder, fingerprintGenerator, idGenerator, clock)
   }
 
   @Provides
@@ -86,9 +90,9 @@ class Module extends AbstractModule with ScalaModule {
   @Provides
   def provideCredentialsProvider(
                                   authInfoRepository: AuthInfoRepository,
-                                  passwordHasher: PasswordHasher): CredentialsProvider = {
+                                  passwordHasherRegistry: PasswordHasherRegistry): CredentialsProvider = {
 
-    new CredentialsProvider(authInfoRepository, passwordHasher, Seq(passwordHasher))
+    new CredentialsProvider(authInfoRepository, passwordHasherRegistry)
   }
 
   @Provides
@@ -113,8 +117,14 @@ class Module extends AbstractModule with ScalaModule {
   }
 
   @Provides
-  def provideOAuth1TokenSecretProvider(configuration: Configuration, clock: Clock): OAuth1TokenSecretProvider = {
+  def provideOAuth1TokenSecretProvider(
+                                        @Named("oauth1-token-secret-cookie-signer") cookieSigner: CookieSigner,
+                                        @Named("oauth1-token-secret-crypter") crypter: Crypter,
+                                        configuration: Configuration,
+                                        clock: Clock): OAuth1TokenSecretProvider = {
+
     val settings = configuration.underlying.as[CookieSecretSettings]("silhouette.oauth1TokenSecretProvider")
-    new CookieSecretProvider(settings, clock)
+
+    new CookieSecretProvider(settings, cookieSigner, crypter, clock)
   }
 }
